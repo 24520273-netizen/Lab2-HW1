@@ -12,19 +12,31 @@ export const employees: Employee[] = [
     id: 1,
     name: 'Alice Johnson',
     department: 'Engineering',
-    age: 29,
+    age: 28,
   },
   {
     id: 2,
     name: 'Brian Smith',
-    department: 'Finance',
+    department: 'Marketing',
     age: 34,
   },
   {
     id: 3,
-    name: 'Carol Williams',
-    department: 'Marketing',
+    name: 'Carla Nguyen',
+    department: 'Finance',
     age: 31,
+  },
+  {
+    id: 4,
+    name: 'David Brown',
+    department: 'Engineering',
+    age: 26,
+  },
+  {
+    id: 5,
+    name: 'Emma Wilson',
+    department: 'Human Resources',
+    age: 37,
   },
 ];
 
