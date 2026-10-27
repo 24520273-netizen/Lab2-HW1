@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 export interface ColumnDef<T> {
   header: string;
@@ -60,6 +60,8 @@ export function DataGrid<T>({
   ariaLabel,
 }: DataGridProps<T>) {
   const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
+  const [filterQuery, setFilterQuery] = useState('');
+  const filterInputId = useId();
 
   const handleSort = (column: ColumnDef<T>) => {
     if (!column.sortable) {
@@ -82,8 +84,22 @@ export function DataGrid<T>({
     });
   };
 
+  const normalizedFilterQuery = filterQuery.trim().toLowerCase();
+
+  const filteredData = normalizedFilterQuery
+    ? data.filter((item) =>
+        columns.some((column) => {
+          const value = item[column.accessorKey];
+
+          return formatCellValue(value)
+            .toLowerCase()
+            .includes(normalizedFilterQuery);
+        }),
+      )
+    : data;
+
   const sortedData = sortConfig
-    ? [...data].sort((firstItem, secondItem) => {
+    ? [...filteredData].sort((firstItem, secondItem) => {
         const firstValue = firstItem[sortConfig.key];
         const secondValue = secondItem[sortConfig.key];
 
@@ -93,66 +109,90 @@ export function DataGrid<T>({
           ? comparison
           : -comparison;
       })
-    : data;
+    : filteredData;
 
   return (
-    <table className="data-grid" aria-label={ariaLabel}>
-      <thead>
-        <tr>
-          {columns.map((column) => {
-            const isSorted =
-              sortConfig?.key === column.accessorKey;
+    <>
+      <section className="data-grid-filter">
+        <label htmlFor={filterInputId}>
+          Filter data
+        </label>
 
-            const ariaSort = isSorted
-              ? sortConfig.direction === 'asc'
-                ? 'ascending'
-                : 'descending'
-              : undefined;
+        <input
+          id={filterInputId}
+          type="search"
+          value={filterQuery}
+          onChange={(event) => setFilterQuery(event.target.value)}
+          placeholder="Search data"
+        />
+      </section>
 
-            const sortIndicator = isSorted
-              ? sortConfig.direction === 'asc'
-                ? ' ↑'
-                : ' ↓'
-              : '';
+      <table className="data-grid" aria-label={ariaLabel}>
+        <thead>
+          <tr>
+            {columns.map((column) => {
+              const isSorted =
+                sortConfig?.key === column.accessorKey;
 
-            return (
-              <th
-                key={String(column.accessorKey)}
-                scope="col"
-                aria-sort={ariaSort}
-              >
-                {column.sortable ? (
-                  <button
-                    type="button"
-                    className="sort-button"
-                    onClick={() => handleSort(column)}
-                    aria-label={`Sort by ${column.header}`}
-                  >
-                    {column.header}
-                    <span aria-hidden="true">
-                      {sortIndicator}
-                    </span>
-                  </button>
-                ) : (
-                  column.header
-                )}
-              </th>
-            );
-          })}
-        </tr>
-      </thead>
+              const ariaSort = isSorted
+                ? sortConfig.direction === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : undefined;
 
-      <tbody>
-        {sortedData.map((item, rowIndex) => (
-          <tr key={getRowKey(item, rowIndex)}>
-            {columns.map((column) => (
-              <td key={String(column.accessorKey)}>
-                {formatCellValue(item[column.accessorKey])}
-              </td>
-            ))}
+              const sortIndicator = isSorted
+                ? sortConfig.direction === 'asc'
+                  ? ' ↑'
+                  : ' ↓'
+                : '';
+
+              return (
+                <th
+                  key={String(column.accessorKey)}
+                  scope="col"
+                  aria-sort={ariaSort}
+                >
+                  {column.sortable ? (
+                    <button
+                      type="button"
+                      className="sort-button"
+                      onClick={() => handleSort(column)}
+                      aria-label={`Sort by ${column.header}`}
+                    >
+                      {column.header}
+                      <span aria-hidden="true">
+                        {sortIndicator}
+                      </span>
+                    </button>
+                  ) : (
+                    column.header
+                  )}
+                </th>
+              );
+            })}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {sortedData.length > 0 ? (
+            sortedData.map((item, rowIndex) => (
+              <tr key={getRowKey(item, rowIndex)}>
+                {columns.map((column) => (
+                  <td key={String(column.accessorKey)}>
+                    {formatCellValue(item[column.accessorKey])}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length}>
+                No matching results.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </>
   );
 }

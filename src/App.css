@@ -13,37 +13,30 @@
   margin-bottom: 1.5rem;
 }
 
-.data-grid {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  color: #1f2937;
+.data-grid-filter {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-.data-grid th,
-.data-grid td {
-  border: 1px solid #d1d5db;
-  padding: 0.75rem 1rem;
-  text-align: left;
-}
-
-.data-grid th {
-  background-color: #f3f4f6;
+.data-grid-filter label {
   font-weight: 600;
 }
-#root {
-  min-height: 100vh;
+
+.data-grid-filter input {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #9ca3af;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  color: #1f2937;
+  font: inherit;
 }
 
-.app {
-  width: min(900px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 2rem 0;
-}
-
-.app h1 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
+.data-grid-filter input:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
 }
 
 .data-grid {
