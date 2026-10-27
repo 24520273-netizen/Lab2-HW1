@@ -58,6 +58,12 @@
   font-weight: 600;
 }
 
+.data-grid td:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: -3px;
+  background-color: #eff6ff;
+}
+
 .sort-button {
   padding: 0;
   border: 0;
