@@ -20,6 +20,8 @@ interface SortConfig<T> {
   direction: SortDirection;
 }
 
+const PAGE_SIZE = 3;
+
 function getRowKey<T>(item: T, rowIndex: number): string | number {
   if (typeof item === 'object' && item !== null && 'id' in item) {
     const id = (item as { id?: unknown }).id;
@@ -61,6 +63,7 @@ export function DataGrid<T>({
 }: DataGridProps<T>) {
   const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
   const [filterQuery, setFilterQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const filterInputId = useId();
 
   const handleSort = (column: ColumnDef<T>) => {
@@ -82,6 +85,11 @@ export function DataGrid<T>({
         direction: 'asc',
       };
     });
+  };
+
+  const handleFilterChange = (value: string) => {
+    setFilterQuery(value);
+    setCurrentPage(1);
   };
 
   const normalizedFilterQuery = filterQuery.trim().toLowerCase();
@@ -111,6 +119,26 @@ export function DataGrid<T>({
       })
     : filteredData;
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedData.length / PAGE_SIZE),
+  );
+
+  const pageStartIndex = (currentPage - 1) * PAGE_SIZE;
+
+  const paginatedData = sortedData.slice(
+    pageStartIndex,
+    pageStartIndex + PAGE_SIZE,
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((page) => Math.max(1, page - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((page) => Math.min(totalPages, page + 1));
+  };
+
   return (
     <>
       <section className="data-grid-filter">
@@ -122,7 +150,7 @@ export function DataGrid<T>({
           id={filterInputId}
           type="search"
           value={filterQuery}
-          onChange={(event) => setFilterQuery(event.target.value)}
+          onChange={(event) => handleFilterChange(event.target.value)}
           placeholder="Search data"
         />
       </section>
@@ -174,8 +202,8 @@ export function DataGrid<T>({
         </thead>
 
         <tbody>
-          {sortedData.length > 0 ? (
-            sortedData.map((item, rowIndex) => (
+          {paginatedData.length > 0 ? (
+            paginatedData.map((item, rowIndex) => (
               <tr key={getRowKey(item, rowIndex)}>
                 {columns.map((column) => (
                   <td key={String(column.accessorKey)}>
@@ -193,6 +221,31 @@ export function DataGrid<T>({
           )}
         </tbody>
       </table>
+
+      <nav
+        className="data-grid-pagination"
+        aria-label="Data grid pagination"
+      >
+        <button
+          type="button"
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <p>
+          Page {currentPage} of {totalPages}
+        </p>
+
+        <button
+          type="button"
+          onClick={handleNextPage}
+          disabled={currentPage >= totalPages}
+        >
+          Next
+        </button>
+      </nav>
     </>
   );
 }

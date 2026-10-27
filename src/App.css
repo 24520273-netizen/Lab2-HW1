@@ -76,3 +76,38 @@
   outline: 3px solid #2563eb;
   outline-offset: 3px;
 }
+
+.data-grid-pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.data-grid-pagination p {
+  margin: 0;
+}
+
+.data-grid-pagination button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #9ca3af;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  color: #1f2937;
+  font: inherit;
+  cursor: pointer;
+}
+
+.data-grid-pagination button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.data-grid-pagination button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.data-grid-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
