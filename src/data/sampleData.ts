@@ -49,7 +49,6 @@ export const employeeColumns: ColumnDef<Employee>[] = [
   {
     header: 'Department',
     accessorKey: 'department',
-    sortable: true,
   },
   {
     header: 'Age',
