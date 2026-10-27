@@ -34,6 +34,18 @@ function getRowKey<T>(item: T, rowIndex: number): string | number {
   return rowIndex;
 }
 
+function getRowLabel<T>(item: T): string {
+  if (typeof item === 'object' && item !== null && 'name' in item) {
+    const name = (item as { name?: unknown }).name;
+
+    if (typeof name === 'string') {
+      return name;
+    }
+  }
+
+  return 'row';
+}
+
 function formatCellValue(value: unknown): string {
   if (value === null || value === undefined) {
     return '';
@@ -59,6 +71,7 @@ function compareValues(
 export function DataGrid<T>({
   data,
   columns,
+  onRowSelect,
   ariaLabel,
 }: DataGridProps<T>) {
   const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
@@ -139,6 +152,8 @@ export function DataGrid<T>({
     setCurrentPage((page) => Math.min(totalPages, page + 1));
   };
 
+  const totalColumns = columns.length + (onRowSelect ? 1 : 0);
+
   return (
     <>
       <section className="data-grid-filter">
@@ -198,6 +213,12 @@ export function DataGrid<T>({
                 </th>
               );
             })}
+
+            {onRowSelect && (
+              <th scope="col">
+                Action
+              </th>
+            )}
           </tr>
         </thead>
 
@@ -210,11 +231,24 @@ export function DataGrid<T>({
                     {formatCellValue(item[column.accessorKey])}
                   </td>
                 ))}
+
+                {onRowSelect && (
+                  <td>
+                    <button
+                      type="button"
+                      className="select-button"
+                      onClick={() => onRowSelect(item)}
+                      aria-label={`Select ${getRowLabel(item)}`}
+                    >
+                      Select
+                    </button>
+                  </td>
+                )}
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length}>
+              <td colSpan={totalColumns}>
                 No matching results.
               </td>
             </tr>
