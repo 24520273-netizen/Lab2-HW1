@@ -26,7 +26,10 @@ function App() {
         ariaLabel="Employee data grid"
       />
 
-      <p className="selection-feedback">
+      <p
+        className="selection-feedback"
+        role="status"
+      >
         {selectedEmployee
           ? `Selected employee: ${selectedEmployee.name}`
           : 'No employee selected.'}

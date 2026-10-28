@@ -461,7 +461,7 @@ export function DataGrid<T>({
           Previous
         </button>
 
-        <p>
+        <p role="status">
           Page {currentPage} of {totalPages}
         </p>
 
